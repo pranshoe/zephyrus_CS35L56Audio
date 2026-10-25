@@ -11,6 +11,8 @@ class IntelLpssSpi{
         bool configure();
         bool setCS(UInt8 cs, bool active);
         void transfer(UInt8 cs, UInt8 *tx, UInt8 *rx, UInt32 length);
+        UInt32 readReg32(UInt8 cs, UInt32 addr);
+        void writeReg32(UInt8 cs, UInt32 addr, UInt32 value);
 
     private:
         IOPCIDevice *spiDev{nullptr};

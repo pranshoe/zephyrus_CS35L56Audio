@@ -179,6 +179,8 @@ void IntelLpssSpi::transfer(UInt8 cs, UInt8 *tx, UInt8 *rx, UInt32 length){
         }
         if(rx){
             rx[i] = *ssdr&0xFF;
+        } else{
+            (void *)ssdr;
         }
     }
 
@@ -187,4 +189,26 @@ void IntelLpssSpi::transfer(UInt8 cs, UInt8 *tx, UInt8 *rx, UInt32 length){
         IODelay(1);
     }
     setCS(cs, false);
+}
+
+
+UInt32 IntelLpssSpi::readReg32(UInt8 cs, UInt32 addr){
+    UInt8 tx[10]={
+        (UInt8)((1<<7) | ((addr & 0x7F000000) >> 24)), (UInt8)((addr & 0x00FF0000) >> 16), (UInt8)((addr & 0x0000FF00) >> 8), (UInt8)(addr & 0x000000FF),
+        0, 0,
+        0, 0, 0, 0};
+
+    UInt8 rx[10]={0};
+
+    transfer(cs, tx, rx, 10);
+    return (rx[6]<<24) | (rx[7] << 16) | (rx[8] << 8) | rx[9];
+}
+
+void IntelLpssSpi::writeReg32(UInt8 cs, UInt32 addr, UInt32 value){
+    UInt8 tx[8] = {
+        (UInt8)((addr & 0x7F000000) >> 24), (UInt8)((addr & 0x00FF0000) >> 16), (UInt8)((addr & 0x0000FF00) >> 8), (UInt8)(addr & 0x000000FF),
+        (UInt8)((value & 0xFF000000) >> 24), (UInt8)((value & 0x00FF0000) >> 16), (UInt8)((value & 0x0000FF00) >> 8), (UInt8)(value & 0x000000FF)
+    };
+
+    transfer(cs, tx, nullptr, 8);
 }
