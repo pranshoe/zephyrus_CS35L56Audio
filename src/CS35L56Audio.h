@@ -8,6 +8,8 @@
 
 #define CS35L56_DSP_VIRTUAL1_MBOX_1			    0x0011020
 
+#define CS35L56_MBOX_CMD_PREVENT_AUTO_HIBERNATE	0x02000003
+
 class CS35L56Audio : public IOService{
     OSDeclareDefaultStructors(CS35L56Audio)
 

@@ -157,6 +157,12 @@ bool CS35L56Audio::reset(){
     if(!waitForFirmwareBoot(0) || !waitForFirmwareBoot(1)){
         return false;
     }
+
+    for(SInt32 i=0; i<2; i++){
+        IOLog("CS35L56Audio: Reset for CS%d\n",i);
+        if(!mboxSend(i, CS35L56_MBOX_CMD_PREVENT_AUTO_HIBERNATE))
+            return false;
+    }
     return true;
 }
 
