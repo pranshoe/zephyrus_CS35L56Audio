@@ -172,4 +172,19 @@ bool CS35L56Audio::waitForFirmwareBoot(UInt8 cs){
     IOLog("CS35L56Audio: Firmware isnt loaded\n");
     return false;
 }
+
+bool CS35L56Audio::mboxSend(UInt8 cs, UInt32 command){
+    spiController.writeReg32(cs, CS35L56_DSP_VIRTUAL1_MBOX_1, command);
+    SInt32 timeout = 100;
+    UInt32 ret;
+    while(--timeout > 0){
+        ret = spiController.readReg32(cs, CS35L56_DSP_VIRTUAL1_MBOX_1);
+        if(ret == 0){
+            return true;
+        } IOSleep(1);
+    }
+
+    IOLog("CS35L56Audio: CS%u mbox command 0x%08x timed out\n", cs, command);
+    return false;
+
 }

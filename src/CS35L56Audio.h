@@ -6,6 +6,8 @@
 #include <IOKit/acpi/IOACPIPlatformDevice.h>
 #include <IOKit/pci/IOPCIDevice.h>
 
+#define CS35L56_DSP_VIRTUAL1_MBOX_1			    0x0011020
+
 class CS35L56Audio : public IOService{
     OSDeclareDefaultStructors(CS35L56Audio)
 
@@ -20,6 +22,7 @@ class CS35L56Audio : public IOService{
         IntelLpssSpi spiController;
         bool reset();
         bool waitForFirmwareBoot(UInt8 cs);
+        bool mboxSend(UInt8 cs, UInt32 comamnd);
 };
 
 #endif // _CS35L56_AUDIO_H
