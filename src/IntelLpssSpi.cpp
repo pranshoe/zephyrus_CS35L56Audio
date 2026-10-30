@@ -177,10 +177,9 @@ void IntelLpssSpi::transfer(UInt8 cs, UInt8 *tx, UInt8 *rx, UInt32 length){
             IOLog("IntelLpssSpi: Rx FIFO timeout\n");
             break;
         }
+        UInt32 data = *(ssdr);
         if(rx){
-            rx[i] = *ssdr&0xFF;
-        } else{
-            (void *)ssdr;
+            rx[i] = (data&0xFF);
         }
     }
 
