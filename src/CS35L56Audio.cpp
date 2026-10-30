@@ -155,4 +155,21 @@ bool CS35L56Audio::reset(){
         IOLog("CS35L56Audio: Warning: Pin 385 is LOW (0V). Amplifier is in reset!\n");
         return false;
     }
+
+bool CS35L56Audio::waitForFirmwareBoot(UInt8 cs){
+    UInt32 mbox = 0;
+    UInt32 timeout = 500;
+    while(--timeout > 0){
+        mbox = spiController.readReg32(cs, 0x0011024);
+        if(mbox > 0 && mbox < 0xFFFFFFFF){
+            IOLog("CS35L56Audio: Firmware is loaded and booted\n");
+            return true;
+        }
+
+        IOSleep(1);
+    }
+
+    IOLog("CS35L56Audio: Firmware isnt loaded\n");
+    return false;
+}
 }

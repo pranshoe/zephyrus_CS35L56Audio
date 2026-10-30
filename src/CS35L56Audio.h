@@ -19,6 +19,7 @@ class CS35L56Audio : public IOService{
     private:
         IntelLpssSpi spiController;
         bool reset();
+        bool waitForFirmwareBoot(UInt8 cs);
 };
 
 #endif // _CS35L56_AUDIO_H
