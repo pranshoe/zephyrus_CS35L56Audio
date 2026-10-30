@@ -162,6 +162,8 @@ bool CS35L56Audio::reset(){
         IOLog("CS35L56Audio: Reset for CS%d\n",i);
         if(!mboxSend(i, CS35L56_MBOX_CMD_PREVENT_AUTO_HIBERNATE))
             return false;
+        spiController.updateReg32(i, CS35L56_ASP1_CONTROL3, CS35L56_ASP1_DOUT_HIZ_CTRL_MASK, CS35L56_ASP1_DOUT_HIZ_CTRL_MASK);
+
     }
     return true;
 }
