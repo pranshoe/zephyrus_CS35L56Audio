@@ -154,6 +154,11 @@ bool CS35L56Audio::reset(){
     }
     IOLog("CS35L56Audio: Pin 385 is 3.3V (HIGH). Amplifier is awake and running.\n");
 
+    if(!waitForFirmwareBoot(0) || !waitForFirmwareBoot(1)){
+        return false;
+    }
+    return true;
+}
 
 bool CS35L56Audio::waitForFirmwareBoot(UInt8 cs){
     UInt32 mbox = 0;
