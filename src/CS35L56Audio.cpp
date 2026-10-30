@@ -164,6 +164,8 @@ bool CS35L56Audio::reset(){
             return false;
         spiController.updateReg32(i, CS35L56_ASP1_CONTROL3, CS35L56_ASP1_DOUT_HIZ_CTRL_MASK, CS35L56_ASP1_DOUT_HIZ_CTRL_MASK);
 
+        spiController.updateReg32(i, CS35L56_IRQ1_MASK_1, CS35L56_AMP_SHORT_ERR_EINT1_MASK, 0);
+        spiController.updateReg32(i, CS35L56_IRQ1_MASK_8, CS35L56_TEMP_ERR_EINT1_MASK, 0);
     }
     return true;
 }
