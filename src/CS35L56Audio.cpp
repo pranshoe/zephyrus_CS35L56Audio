@@ -81,7 +81,7 @@ bool CS35L56Audio::start(IOService* provider){
     IODelay(10000);
 
     if(!spiController.init()){
-        IOLog("CS25L56Audio: Couldn't init SPI Controller\n");
+        IOLog("CS35L56Audio: Couldn't init SPI Controller\n");
         return false;
     }
 
@@ -109,8 +109,8 @@ bool CS35L56Audio::start(IOService* provider){
 
 void CS35L56Audio::stop(IOService *provider){
     IOLog("CS35L56Audio: stop() called\n");
-    IOService::stop(provider);
     spiController.free();
+    IOService::stop(provider);
 }
 
 void CS35L56Audio::free(){
@@ -148,13 +148,12 @@ bool CS35L56Audio::reset(){
 
     val = *padCfgDw0;
     map->release();
-    if (val & (1 << 0)) {
-        IOLog("CS35L56Audio: Pin 385 is 3.3V (HIGH). Amplifier is awake and running.\n");
-        return true;
-    } else {
+    if (!(val & (1 << 0))) {
         IOLog("CS35L56Audio: Warning: Pin 385 is LOW (0V). Amplifier is in reset!\n");
         return false;
     }
+    IOLog("CS35L56Audio: Pin 385 is 3.3V (HIGH). Amplifier is awake and running.\n");
+
 
 bool CS35L56Audio::waitForFirmwareBoot(UInt8 cs){
     UInt32 mbox = 0;
