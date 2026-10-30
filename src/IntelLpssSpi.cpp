@@ -211,3 +211,9 @@ void IntelLpssSpi::writeReg32(UInt8 cs, UInt32 addr, UInt32 value){
 
     transfer(cs, tx, nullptr, 8);
 }
+
+void IntelLpssSpi::updateReg32(UInt8 cs, UInt32 addr, UInt32 mask, UInt32 val){
+    UInt32 curr = readReg32(cs, addr);
+    curr = (curr & ~mask) | (val & mask);
+    writeReg32(cs, addr, curr);
+}
