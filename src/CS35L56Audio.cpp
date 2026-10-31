@@ -166,7 +166,34 @@ bool CS35L56Audio::reset(){
 
         spiController.updateReg32(i, CS35L56_IRQ1_MASK_1, CS35L56_AMP_SHORT_ERR_EINT1_MASK, 0);
         spiController.updateReg32(i, CS35L56_IRQ1_MASK_8, CS35L56_TEMP_ERR_EINT1_MASK, 0);
+
+
+        /*
+          * This reg sequence configures the device as
+          *  ASP1_BCLK_FREQ = 3.072 MHz
+          *  ASP1_RX_WIDTH = 32 cycles per slot, ASP1_TX_WIDTH = 32 cycles per slot, ASP1_FMT = I2S
+          *  ASP1_DOUT_HIZ_CONTROL = Hi-Z during unused timeslots
+          *  ASP1_RX_WL = 24 bits per sample
+          *  ASP1_TX_WL = 24 bits per sample
+          *  ASP1_RXn_EN 1..3 and ASP1_TXn_EN 1..4 disabled
+          *
+          * Override any Windows-specific mixer settings applied by the firmware.
+          */
+        spiController.writeReg32(i, CS35L56_ASP1_CONTROL1, 0x00000021);
+        spiController.writeReg32(i, CS35L56_ASP1_CONTROL2, 0x20200200);
+        spiController.writeReg32(i, CS35L56_ASP1_CONTROL3, 0x00000003);
+        spiController.writeReg32(i, CS35L56_ASP1_FRAME_CONTROL1, 0x03020100);
+        spiController.writeReg32(i, CS35L56_ASP1_FRAME_CONTROL5, 0x00020100);
+        spiController.writeReg32(i, CS35L56_ASP1_DATA_CONTROL1, 0x00000018);
+        spiController.writeReg32(i, CS35L56_ASP1_DATA_CONTROL5, 0x00000018);
+        spiController.writeReg32(i, CS35L56_ASP1_ENABLES1, 0x00000000);
+        spiController.writeReg32(i, CS35L56_ASP1TX1_INPUT, 0x00000018);
+        spiController.writeReg32(i, CS35L56_ASP1TX2_INPUT, 0x00000019);
+        spiController.writeReg32(i, CS35L56_ASP1TX3_INPUT, 0x00000020);
+        spiController.writeReg32(i, CS35L56_ASP1TX4_INPUT, 0x00000028);
     }
+
+
     return true;
 }
 
