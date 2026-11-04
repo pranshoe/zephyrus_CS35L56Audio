@@ -14,6 +14,7 @@ class IntelLpssSpi{
         UInt32 readReg32(UInt8 cs, UInt32 addr);
         void writeReg32(UInt8 cs, UInt32 addr, UInt32 value);
         void updateReg32(UInt8 cs, UInt32 addr, UInt32 mask, UInt32 value);
+        void burstWrite(UInt8 cs, UInt32 addr, UInt8 *bytes, UInt32 len);
 
     private:
         IOPCIDevice *spiDev{nullptr};

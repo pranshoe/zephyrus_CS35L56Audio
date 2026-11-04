@@ -2,6 +2,7 @@
 #include <IOKit/IOService.h>
 #include <IOKit/acpi/IOACPIPlatformDevice.h>
 #include <IOKit/pci/IOPCIDevice.h>
+#include <cstring>
 
 bool IntelLpssSpi::init(){
     IORegistryEntry *entry = IORegistryEntry::fromPath("IOService:/AppleACPIPlatformExpert/PC00@0/AppleACPIPCI/SPI0@1E,2");
@@ -216,4 +217,18 @@ void IntelLpssSpi::updateReg32(UInt8 cs, UInt32 addr, UInt32 mask, UInt32 val){
     UInt32 curr = readReg32(cs, addr);
     curr = (curr & ~mask) | (val & mask);
     writeReg32(cs, addr, curr);
+}
+
+void IntelLpssSpi::burstWrite(UInt8 cs, UInt32 addr, UInt8 *bytes, UInt32 len){
+    UInt8 *tx = (UInt8 *)IOMalloc(6+len);
+    tx[0] = (UInt8)((addr >> 24) & 0x7F);
+    tx[1] = (UInt8)((addr >> 16) & 0xFF);
+    tx[2] = (UInt8)((addr >> 8) & 0xFF);
+    tx[3] = (UInt8)(addr & 0xFF);
+
+    tx[4] = tx[5] = 0;
+    memcpy(tx+6, bytes, len);
+
+    transfer(cs, tx, nullptr, 6+len);
+    IOFree(tx, 6+len);
 }
