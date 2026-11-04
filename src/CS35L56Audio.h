@@ -50,6 +50,7 @@ class CS35L56Audio : public IOService{
         bool reset();
         bool waitForFirmwareBoot(UInt8 cs);
         bool mboxSend(UInt8 cs, UInt32 comamnd);
+        bool configure();
 };
 
 #endif // _CS35L56_AUDIO_H
