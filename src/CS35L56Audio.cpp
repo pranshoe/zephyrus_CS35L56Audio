@@ -1,5 +1,6 @@
 #include "CS35L56Audio.h"
 #include "IntelLpssSpi.h"
+#include "CS35L56_Rev3.11.16_wmfw.h"
 #include <mach/kmod.h>
 #include <IOKit/IOLib.h>
 
@@ -251,6 +252,28 @@ bool CS35L56Audio::loadFw(){
         if(val != CS35L56_HALO_STATE_SHUTDOWN){
             IOLog("CS35L56Audio: Cannot shutdown CS%d\n", i);
             return false;
+        }
+
+        //Load the WMFW
+        UInt32 pos = 40;
+        while(pos < firmware_CS35L56_Rev3_11_16_wmfw_len){
+            UInt32 word = *(UInt32 *)&firmware_CS35L56_Rev3_11_16_wmfw[pos];
+            UInt32 len = *(UInt32 *)&firmware_CS35L56_Rev3_11_16_wmfw[pos+4];
+            UInt32 off = word & 0xFFFFFF;
+            UInt32 type = word >> 24;
+
+            UInt32 reg = 0;
+            switch(type){
+                case WMFW_HALO_XM_PACKED: reg = (0x02000000 + off*3) & ~3u; break;
+                case WMFW_HALO_YM_PACKED: reg = (0x02C00000 + off*3) & ~3u; break;
+                case WMFW_HALO_PM_PACKED: reg = 0x03800000 + off*5; break;
+                case WMFW_ADSP2_XM: reg = 0x02800000 + off*4; break;
+                case WMFW_ADSP2_YM: reg = 0x03400000 + off*4; break;
+                case WMFW_ABSOLUTE: reg = off;
+            }
+
+            if(reg) spiController.burstWrite(i, reg, firmware_CS35L56_Rev3_11_16_wmfw+pos+8, len);
+            pos += 8 +len;
         }
     }
 }
