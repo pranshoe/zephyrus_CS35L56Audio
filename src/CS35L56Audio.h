@@ -22,7 +22,7 @@
 #define CS35L56_ASP1TX2_INPUT				    0x0004C24
 #define CS35L56_ASP1TX3_INPUT				    0x0004C28
 #define CS35L56_ASP1TX4_INPUT				    0x0004C2C
-
+#define CS35L56_DSP1_PM_CUR_STATE			    0x2804308
 
 // IRQ_MASK_1
 #define CS35L56_AMP_SHORT_ERR_EINT1_MASK	    0x80000000
@@ -33,7 +33,11 @@
 // ASP_CONTROL3
 #define CS35L56_ASP1_DOUT_HIZ_CTRL_MASK			0x00000003
 
+#define CS35L56_HALO_STATE_SHUTDOWN			    1
+
 #define CS35L56_MBOX_CMD_PREVENT_AUTO_HIBERNATE	0x02000003
+#define CS35L56_MBOX_CMD_SHUTDOWN			    0x02000005
+
 
 class CS35L56Audio : public IOService{
     OSDeclareDefaultStructors(CS35L56Audio)
@@ -51,6 +55,7 @@ class CS35L56Audio : public IOService{
         bool waitForFirmwareBoot(UInt8 cs);
         bool mboxSend(UInt8 cs, UInt32 comamnd);
         bool configure();
+        bool loadFw();
 };
 
 #endif // _CS35L56_AUDIO_H
