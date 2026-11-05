@@ -2668,12 +2668,3 @@ unsigned char firmware_CS35L56_Rev3_11_16_wmfw[] = {
   0x00, 0x00, 0x00, 0x00
 };
 unsigned int firmware_CS35L56_Rev3_11_16_wmfw_len = 31996;
-
-#define WMFW_HALO_PM_PACKED         0x10
-#define WMFW_HALO_XM_PACKED         0x11
-#define WMFW_HALO_YM_PACKED         0x12
-
-#define WMFW_ADSP2_XM               5
-#define WMFW_ADSP2_YM               6
-
-#define WMFW_ABSOLUTE               0xF0
