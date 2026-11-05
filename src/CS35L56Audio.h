@@ -38,6 +38,8 @@
 #define CS35L56_MBOX_CMD_PREVENT_AUTO_HIBERNATE	0x02000003
 #define CS35L56_MBOX_CMD_SHUTDOWN			    0x02000005
 
+#define CS35L56_DSP1_XMEM_UNPACKED24_0          0x2800000
+
 
 class CS35L56Audio : public IOService{
     OSDeclareDefaultStructors(CS35L56Audio)

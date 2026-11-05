@@ -1,6 +1,7 @@
 #include "CS35L56Audio.h"
 #include "IntelLpssSpi.h"
 #include "CS35L56_Rev3.11.16_wmfw.h"
+#include "wmfw.h"
 #include <mach/kmod.h>
 #include <IOKit/IOLib.h>
 
@@ -275,5 +276,37 @@ bool CS35L56Audio::loadFw(){
             if(reg) spiController.burstWrite(i, reg, firmware_CS35L56_Rev3_11_16_wmfw+pos+8, len);
             pos += 8 +len;
         }
+
+
+        //setupAlgs
+        UInt32 n_algs;
+
+        n_algs = spiController.readReg32(i, CS35L56_DSP1_XMEM_UNPACKED24_0 + 0x24); //Condensed from the source.
+        if(n_algs == 0 || n_algs > 64) {
+            IOLog("CS35L56Audio: CS%d: No algs found\n", i);
+            return false;
+        }
+
+        UInt32 term = spiController.readReg32(i, CS35L56_DSP1_XMEM_UNPACKED24_0 + 0x28 + n_algs*24);
+        if(term != 0x00bedead){
+            IOLog("CS35L56Audio: CS%d: Terminator for algorithms not found\n");
+            return false;
+        }
+
+        struct wmfw_halo_alg_hdr haloAlgs[64];
+        haloAlgs[0].id = 0x001a00d6;
+        haloAlgs[0].xm_base = 0;
+        haloAlgs[0].ym_base = 0;
+        spiController.burstRead(i, CS35L56_DSP1_XMEM_UNPACKED24_0  + 0x28, &haloAlgs[1], n_algs * sizeof(wmfw_halo_alg_hdr));
+        for(UInt32 k = 1; k<=n_algs; k++){
+            haloAlgs[k].id = be32_to_cpu(haloAlgs[k].id);
+            haloAlgs[k].ver = be32_to_cpu(haloAlgs[k].ver);
+            haloAlgs[k].xm_base = be32_to_cpu(haloAlgs[k].xm_base);
+            haloAlgs[k].xm_size = be32_to_cpu(haloAlgs[k].xm_size);
+            haloAlgs[k].ym_base = be32_to_cpu(haloAlgs[k].ym_base);
+            haloAlgs[k].ym_size = be32_to_cpu(haloAlgs[k].ym_size);
+        }
+
+
     }
 }
