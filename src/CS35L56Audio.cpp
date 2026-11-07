@@ -1,6 +1,8 @@
 #include "CS35L56Audio.h"
 #include "IntelLpssSpi.h"
 #include "CS35L56_Rev3.11.16_wmfw.h"
+#include "cs35l56_10431c63_spkid1_amp1_bin.h"
+#include "cs35l56_10431c63_spkid1_amp2_bin.h"
 #include "wmfw.h"
 #include <mach/kmod.h>
 #include <IOKit/IOLib.h>
@@ -307,6 +309,44 @@ bool CS35L56Audio::loadFw(){
             haloAlgs[k].ym_size = be32_to_cpu(haloAlgs[k].ym_size);
         }
 
+
+        //Load Coefficients
+        UInt8 *file = (i==0 ? firmware_cs35l56_10431c63_spkid1_amp1_bin : firmware_cs35l56_10431c63_spkid1_amp2_bin);
+        UInt32 file_size = (i==0 ? firmware_cs35l56_10431c63_spkid1_amp1_bin_len : firmware_cs35l56_10431c63_spkid1_amp2_bin_len);
+        pos = *(UInt32 *)&file[4];
+        while(pos < file_size){
+            UInt16 offset = *(UInt16 *)&file[pos];
+            UInt16 type = *(UInt16 *)&file[pos+2];
+            UInt32 blk_id = *(UInt32 *)&file[pos+4];
+            UInt32 len = *(UInt32 *)&file[pos+16];
+            UInt8 *data = (UInt8 *)&file[pos+20];
+
+            UInt32 reg = 0;
+
+            SInt32 alg_idx = -1;
+            for(UInt32 k=0; k<=n_algs; k++){
+                if(blk_id == haloAlgs[k].id){
+                    alg_idx = k;
+                    break;
+                }
+            }
+
+            if(alg_idx!=-1){
+                switch(type){
+                    case WMFW_HALO_XM_PACKED: reg = ((0x02000000 + haloAlgs[alg_idx].xm_base*3) & ~3u) + offset; break;
+                    case WMFW_HALO_YM_PACKED: reg = ((0x02C00000 + haloAlgs[alg_idx].ym_base*3) & ~3u) + offset; break;
+                    case WMFW_ADSP2_XM: reg = 0x02800000 + haloAlgs[alg_idx].xm_base*4 + offset; break;
+                    case WMFW_ADSP2_YM: reg = 0x03400000 + haloAlgs[alg_idx].ym_base*4 + offset; break;
+                }
+            }
+
+
+            if(reg){
+                spiController.burstWrite(i, reg, data, len);
+            }
+
+            pos+=(len + 20 + 3) & ~3u;
+        }
 
     }
 }
