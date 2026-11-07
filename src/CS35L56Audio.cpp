@@ -99,10 +99,16 @@ bool CS35L56Audio::start(IOService* provider){
         return false;
     }
 
+    if(!loadFw()){
+        IOLog("CS35L56Audio: Failed to load firmware\n");
+        return false;
+    }
+
     if(!configure()){
         IOLog("CS35L56Audio: Configuring Amps failed\n");
         return false;
     }
+
 
     for (UInt8 cs = 0; cs < 2; cs++) {
         UInt8 tx[10] = {0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0};
@@ -348,5 +354,17 @@ bool CS35L56Audio::loadFw(){
             pos+=(len + 20 + 3) & ~3u;
         }
 
+        spiController.writeReg32(i, CS35L56_DSP1_HALO_STATE, 0);
+        if(!mboxSend(i, CS35L56_MBOX_CMD_SYSTEM_RESET)){
+            IOLog("CS35L56Audio: CS%d: Failed to send system reset command\n", i);
+            return false;
+        }
+
+        if(!waitForFirmwareBoot(i)){
+            IOLog("CS35L56Audio: CS%d: Failed to boot new firmware\n", i);
+            return false;
+        }
+
     }
+    return true;
 }
