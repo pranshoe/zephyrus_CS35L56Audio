@@ -247,6 +247,7 @@ bool CS35L56Audio::configure(){
         spiController.updateReg32(i, CS35L56_PROTECTION_STATUS, 1, 0);
         spiController.writeReg32(i, CS35L56_DSP1RX1_INPUT, CS35L56_INPUT_SRC_ASP1RX1);
         spiController.writeReg32(i, CS35L56_DSP1RX2_INPUT, CS35L56_INPUT_SRC_ASP1RX2);
+        spiController.writeReg32(i, CS35L56_DACPCM1_INPUT, CS35L56_INPUT_SRC_DSP1TX5);
     }
     return true;
 }
