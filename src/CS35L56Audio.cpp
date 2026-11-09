@@ -254,15 +254,16 @@ bool CS35L56Audio::loadFw(){
         mboxSend(i, CS35L56_MBOX_CMD_SHUTDOWN);
 
         SInt32 timeout = 250;
-        UInt32 val = 0;
+        UInt32 val = 0, val1 = 0;
         while(--timeout>0){
-            val = spiController.readReg32(i, CS35L56_DSP1_PM_CUR_STATE);
-            if(val == CS35L56_HALO_STATE_SHUTDOWN) break;
+            val = spiController.readReg32(i, CS35L56_B0_DSP1_PM_CUR_STATE);
+            val1 = spiController.readReg32(i, CS35L56_B2_DSP1_PM_CUR_STATE);
+            if(val == CS35L56_HALO_STATE_SHUTDOWN || val1 == CS35L56_HALO_STATE_SHUTDOWN || val == CS35L56_HALO_STATE_BOOT_DONE ||val1 == CS35L56_HALO_STATE_BOOT_DONE) break;
             IOSleep(1);
         }
 
-        if(val != CS35L56_HALO_STATE_SHUTDOWN){
-            IOLog("CS35L56Audio: Cannot shutdown CS%d\n", i);
+        if(val != CS35L56_HALO_STATE_SHUTDOWN && val1 != CS35L56_HALO_STATE_SHUTDOWN && val != CS35L56_HALO_STATE_BOOT_DONE && val1!=CS35L56_HALO_STATE_BOOT_DONE){
+            IOLog("CS35L56Audio: Cannot shutdown CS%d (val=0x%08x, val1=0x%08x)\n", (int)i, val, val1);
             return false;
         }
 
