@@ -109,6 +109,7 @@ bool CS35L56Audio::start(IOService* provider){
         return false;
     }
 
+    play();
 
     for (UInt8 cs = 0; cs < 2; cs++) {
         UInt8 tx[10] = {0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0};
@@ -367,4 +368,19 @@ bool CS35L56Audio::loadFw(){
 
     }
     return true;
+}
+void CS35L56Audio::play(){
+    for(SInt32 i=0; i<2; i++){
+        mboxSend(i, CS35L56_MBOX_CMD_AUDIO_PLAY);
+
+        SInt32 timeout = 100;
+        UInt32 val = 0;
+        while(--timeout > 0){
+            val = spiController.readReg32(i, CS35L56_TRANSDUCER_ACTUAL_PS);
+            if(val == 0) break;
+            IOSleep(1);
+        }
+
+        spiController.writeReg32(i, CS35L56_ASP1_ENABLES1, (1<<CS35L56_ASP_RX1_EN_SHIFT) | (1<<CS35L56_ASP_RX2_EN_SHIFT) | (1<<i));
+    }
 }

@@ -24,6 +24,7 @@
 #define CS35L56_ASP1TX4_INPUT				    0x0004C2C
 #define CS35L56_DSP1_PM_CUR_STATE			    0x2804308
 #define CS35L56_DSP1_HALO_STATE				    0x28021E0
+#define CS35L56_TRANSDUCER_ACTUAL_PS			0x3400150
 
 // IRQ_MASK_1
 #define CS35L56_AMP_SHORT_ERR_EINT1_MASK	    0x80000000
@@ -42,6 +43,10 @@
 #define CS35L56_DSP1_XMEM_UNPACKED24_0          0x2800000
 #define CS35L56_MBOX_CMD_SYSTEM_RESET			0x02000007
 
+#define CS35L56_MBOX_CMD_AUDIO_PLAY			    0x0B000001
+
+#define CS35L56_ASP_RX2_EN_SHIFT			    17
+#define CS35L56_ASP_RX1_EN_SHIFT			    16
 
 class CS35L56Audio : public IOService{
     OSDeclareDefaultStructors(CS35L56Audio)
@@ -60,6 +65,7 @@ class CS35L56Audio : public IOService{
         bool mboxSend(UInt8 cs, UInt32 comamnd);
         bool configure();
         bool loadFw();
+        void play();
 };
 
 #endif // _CS35L56_AUDIO_H
