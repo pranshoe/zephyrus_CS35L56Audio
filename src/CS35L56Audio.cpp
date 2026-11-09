@@ -369,6 +369,12 @@ bool CS35L56Audio::loadFw(){
     }
     return true;
 }
+
+void CS35L56Audio::setMute(bool mute){
+    spiController.updateReg32(0, CS35L56_MAIN_RENDER_USER_MUTE, CS35L56_MAIN_RENDER_USER_MUTE_MASK, mute);
+    spiController.updateReg32(1, CS35L56_MAIN_RENDER_USER_MUTE, CS35L56_MAIN_RENDER_USER_MUTE_MASK, mute);
+}
+
 void CS35L56Audio::play(){
     for(SInt32 i=0; i<2; i++){
         mboxSend(i, CS35L56_MBOX_CMD_AUDIO_PLAY);
