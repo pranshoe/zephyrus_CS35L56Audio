@@ -298,7 +298,7 @@ bool CS35L56Audio::loadFw(){
 
         UInt32 term = spiController.readReg32(i, CS35L56_DSP1_XMEM_UNPACKED24_0 + 0x28 + n_algs*24);
         if(term != 0x00bedead){
-            IOLog("CS35L56Audio: CS%d: Terminator for algorithms not found\n");
+            IOLog("CS35L56Audio: CS%d: Terminator for algorithms not found\n", i);
             return false;
         }
 
