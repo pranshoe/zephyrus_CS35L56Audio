@@ -24,6 +24,7 @@
 #define CS35L56_ASP1TX4_INPUT				    0x0004C2C
 #define CS35L56_DSP1_PM_CUR_STATE			    0x2804308
 #define CS35L56_DSP1_HALO_STATE				    0x28021E0
+#define CS35L56_MAIN_RENDER_USER_VOLUME			0x340002C
 #define CS35L56_MAIN_RENDER_USER_MUTE           0x3400024
 #define CS35L56_TRANSDUCER_ACTUAL_PS			0x3400150
 
@@ -43,6 +44,12 @@
 
 #define CS35L56_DSP1_XMEM_UNPACKED24_0          0x2800000
 #define CS35L56_MBOX_CMD_SYSTEM_RESET			0x02000007
+
+
+#define CS35L56_MAIN_RENDER_USER_VOLUME_MIN		-400
+#define CS35L56_MAIN_RENDER_USER_VOLUME_MAX		48
+#define CS35L56_MAIN_RENDER_USER_VOLUME_MASK	0x0000FFC0
+#define CS35L56_MAIN_RENDER_USER_VOLUME_SHIFT	6
 
 #define CS35L56_MAIN_RENDER_USER_MUTE_MASK      0x00000001
 
@@ -68,6 +75,7 @@ class CS35L56Audio : public IOService{
         bool mboxSend(UInt8 cs, UInt32 comamnd);
         bool configure();
         bool loadFw();
+        void setVolume(SInt32 volume);
         void setMute(bool mute);
         void play();
 };

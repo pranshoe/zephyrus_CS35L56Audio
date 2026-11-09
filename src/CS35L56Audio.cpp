@@ -370,6 +370,17 @@ bool CS35L56Audio::loadFw(){
     return true;
 }
 
+void CS35L56Audio::setVolume(SInt32 volume){
+    if(volume < 0 || volume > (CS35L56_MAIN_RENDER_USER_VOLUME_MAX - CS35L56_MAIN_RENDER_USER_VOLUME_MIN)){
+        return;
+    }
+
+    UInt32 raw_volume = (volume + CS35L56_MAIN_RENDER_USER_VOLUME_MIN) << CS35L56_MAIN_RENDER_USER_VOLUME_SHIFT;
+    spiController.updateReg32(0, CS35L56_MAIN_RENDER_USER_VOLUME, CS35L56_MAIN_RENDER_USER_VOLUME_MASK, raw_volume);
+    spiController.updateReg32(1, CS35L56_MAIN_RENDER_USER_VOLUME, CS35L56_MAIN_RENDER_USER_VOLUME_MASK, raw_volume);
+    return;
+}
+
 void CS35L56Audio::setMute(bool mute){
     spiController.updateReg32(0, CS35L56_MAIN_RENDER_USER_MUTE, CS35L56_MAIN_RENDER_USER_MUTE_MASK, mute);
     spiController.updateReg32(1, CS35L56_MAIN_RENDER_USER_MUTE, CS35L56_MAIN_RENDER_USER_MUTE_MASK, mute);
