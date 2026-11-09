@@ -2,10 +2,16 @@
 #include <IOKit/IOService.h>
 #include <IOKit/acpi/IOACPIPlatformDevice.h>
 #include <IOKit/pci/IOPCIDevice.h>
-#include <cstring>
 
 bool IntelLpssSpi::init(){
-    IORegistryEntry *entry = IORegistryEntry::fromPath("IOService:/AppleACPIPlatformExpert/PC00@0/AppleACPIPCI/SPI0@1E,2");
+    IORegistryEntry *entry = nullptr;
+    for (int retry = 0; retry < 30; retry++) {
+        entry = IORegistryEntry::fromPath("IOService:/AppleACPIPlatformExpert/PC00@0/AppleACPIPCI/SPI0@1E,2");
+        if (!entry)
+            entry = IORegistryEntry::fromPath("IOService:/AppleACPIPlatformExpert/PCI0@0/AppleACPIPCI/SPI0@1E,2");
+        if (entry) break;
+        IOSleep(100);
+    }
 
     if(!entry){
         IOLog("IntelLpssSpi: Entry of SPI Controller doesn't exist\n");
