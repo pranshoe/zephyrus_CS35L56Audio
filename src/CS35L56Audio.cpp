@@ -249,6 +249,10 @@ bool CS35L56Audio::configure(){
         spiController.writeReg32(i, CS35L56_DSP1RX2_INPUT, CS35L56_INPUT_SRC_ASP1RX2);
         spiController.writeReg32(i, CS35L56_DACPCM1_INPUT, CS35L56_INPUT_SRC_DSP1TX5);
     }
+    setVolume(400);
+    setMute(false);
+    mboxSend(0, CS35L56_MBOX_CMD_AUDIO_REINIT);
+    mboxSend(1, CS35L56_MBOX_CMD_AUDIO_REINIT);
     return true;
 }
 
