@@ -211,12 +211,13 @@ UInt32 IntelLpssSpi::readReg32(UInt8 cs, UInt32 addr){
 }
 
 void IntelLpssSpi::writeReg32(UInt8 cs, UInt32 addr, UInt32 value){
-    UInt8 tx[8] = {
+    UInt8 tx[10] = {
         (UInt8)((addr & 0x7F000000) >> 24), (UInt8)((addr & 0x00FF0000) >> 16), (UInt8)((addr & 0x0000FF00) >> 8), (UInt8)(addr & 0x000000FF),
+        0, 0,
         (UInt8)((value & 0xFF000000) >> 24), (UInt8)((value & 0x00FF0000) >> 16), (UInt8)((value & 0x0000FF00) >> 8), (UInt8)(value & 0x000000FF)
     };
 
-    transfer(cs, tx, nullptr, 8);
+    transfer(cs, tx, nullptr, 10);
 }
 
 void IntelLpssSpi::updateReg32(UInt8 cs, UInt32 addr, UInt32 mask, UInt32 val){
